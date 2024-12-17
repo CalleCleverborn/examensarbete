@@ -1,6 +1,6 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import User from '../../models/User'
+import User from '../../models/User';
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -28,7 +28,7 @@ passport.use(
         }
         return done(null, user);
       } catch (err) {
-        return done(err, false);
+        return done(err);
       }
     }
   )

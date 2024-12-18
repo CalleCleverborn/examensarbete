@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { Request, Response, NextFunction } from "express";
 
-const requireAuth: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
+const requireAuth = (req: Request, res: Response, next: NextFunction): void => {
   if (!req.user) {
-    res.status(401).json({ message: "Not logged in" });
+    res.status(401).json({ error: "Unauthorized" });
     return; 
   }
-  next();
+  next(); 
 };
 
-export { requireAuth };
+export default requireAuth;

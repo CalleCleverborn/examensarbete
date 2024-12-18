@@ -1,26 +1,25 @@
-import { Schema, model, Types } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
-interface ITransformation {
-  userId: Types.ObjectId;
+export interface ITransformation extends Document {
+  userId: string;
   voiceModelId: number;
-  jobId: number;
+  jobId: string;
   status: string;
-  createdAt: Date;
-  jobStartTime?: Date;
+  jobStartTime: Date;
   jobEndTime?: Date;
-  originalFileUrl?: string;
+  originalFileUrl: string;
+  outputFileUrl?: string; 
 }
 
-const transformationSchema = new Schema<ITransformation>({
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+const TransformationSchema = new Schema<ITransformation>({
+  userId: { type: String, required: true },
   voiceModelId: { type: Number, required: true },
-  jobId: { type: Number, required: true },
-  status: { type: String, default: 'running' },
-  createdAt: { type: Date, default: Date.now },
-  jobStartTime: { type: Date },
+  jobId: { type: String, required: true },
+  status: { type: String, required: true },
+  jobStartTime: { type: Date, default: Date.now },
   jobEndTime: { type: Date },
-  originalFileUrl: { type: String }
+  originalFileUrl: { type: String, required: true },
+  outputFileUrl: { type: String }, 
 });
 
-const Transformation = model<ITransformation>('Transformation', transformationSchema);
-export default Transformation;
+export default mongoose.model<ITransformation>("Transformation", TransformationSchema);

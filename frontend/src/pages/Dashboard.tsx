@@ -4,45 +4,58 @@ interface Transformation {
   _id: string;
   status: string;
   jobId: number;
+  outputFileUrl?: string;
 }
 
 interface TransformationsResponse {
   data: Transformation[];
 }
 
-interface User {
-  name?: string;
-  email?: string;
-  subscriptionPlan?: string;
-}
-
-interface DashboardProps {
-  user: User;
-}
-
-const Dashboard: React.FC<DashboardProps> = () => {
+const Dashboard: React.FC = () => {
   const [transformations, setTransformations] = useState<Transformation[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  const fetchTransformations = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/api/transformations", {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to fetch transformations");
+      const json: TransformationsResponse = await res.json();
+      setTransformations(json.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    const fetchTransformations = async () => {
-      try {
-        const res = await fetch("http://localhost:4000/api/transformations", {
-          credentials: "include",
-        });
-        if (!res.ok) {
-          throw new Error(
-            `Failed to fetch transformations. Status: ${res.status}`
-          );
+    const interval = setInterval(async () => {
+      for (const t of transformations) {
+        if (t.status !== "success") {
+          try {
+            const res = await fetch(
+              `http://localhost:4000/api/transformations/${t._id}`,
+              {
+                credentials: "include",
+              }
+            );
+            if (res.ok) {
+              const updated = await res.json();
+              setTransformations((prev) =>
+                prev.map((item) => (item._id === updated._id ? updated : item))
+              );
+            }
+          } catch (error) {
+            console.error("Error updating transformation:", error);
+          }
         }
-
-        const json: TransformationsResponse = await res.json();
-        setTransformations(json.data);
-      } catch (error) {
-        console.error(error);
       }
-    };
+    }, 5000);
 
+    return () => clearInterval(interval);
+  }, [transformations]);
+
+  useEffect(() => {
     fetchTransformations();
   }, []);
 
@@ -51,7 +64,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
     const formData = new FormData();
     formData.append("soundFile", selectedFile);
-    formData.append("voiceModelId", "2");
+    formData.append("voiceModelId", "110784");
 
     try {
       const res = await fetch("http://localhost:4000/api/transformations", {
@@ -60,12 +73,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
         credentials: "include",
       });
 
-      if (!res.ok) {
-        throw new Error(
-          `Failed to create transformation. Status: ${res.status}`
-        );
-      }
-
+      if (!res.ok) throw new Error("Failed to create transformation");
       const result: Transformation = await res.json();
       setTransformations((prev) => [result, ...prev]);
     } catch (error) {
@@ -87,6 +95,17 @@ const Dashboard: React.FC<DashboardProps> = () => {
         {transformations.map((t) => (
           <li key={t._id}>
             ID: {t._id}, Status: {t.status}, Job ID: {t.jobId}
+            {t.status === "success" && t.outputFileUrl && (
+              <div>
+                <a
+                  href={t.outputFileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Download Converted File
+                </a>
+              </div>
+            )}
           </li>
         ))}
       </ul>

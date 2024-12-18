@@ -1,4 +1,4 @@
-// backend/src/auth/passport.ts
+
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from '../../models/User';
@@ -43,17 +43,17 @@ passport.use(
 );
 
 passport.serializeUser((user: any, done) => {
-  console.log("Serializing user:", user.id);
+  
   done(null, user.id);
 });
 
 passport.deserializeUser(async (id: string, done) => {
   try {
-    console.log("Deserializing user with id:", id);
+    
     const user = await User.findById(id);
     done(null, user);
   } catch (err) {
-    console.error("Error deserializing user:", err);
+    
     done(err);
   }
 });

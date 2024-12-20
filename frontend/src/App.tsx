@@ -5,7 +5,7 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import Dashboard from "./pages/Dashboard"; // Se till att detta är rätt sökväg
+import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 
 interface User {

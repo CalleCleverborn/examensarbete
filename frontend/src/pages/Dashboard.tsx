@@ -13,11 +13,17 @@ interface Transformation {
   outputFileUrl?: string;
 }
 
-interface TransformationsResponse {
-  data: Transformation[];
+interface User {
+  name?: string;
+  email?: string;
+  subscriptionPlan?: string;
 }
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  user: User;
+}
+
+const Dashboard: React.FC<DashboardProps> = () => {
   const [transformations, setTransformations] = useState<Transformation[]>([]);
   const [voiceModels, setVoiceModels] = useState<VoiceModel[]>([]);
   const [selectedVoiceModel, setSelectedVoiceModel] = useState<number | null>(
@@ -56,10 +62,11 @@ const Dashboard: React.FC = () => {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch transformations");
-      const json: TransformationsResponse = await res.json();
-      setTransformations(json.data);
+      const json = await res.json();
+      setTransformations(json.data || []);
     } catch (error) {
       console.error("Error fetching transformations:", error);
+      setTransformations([]);
     }
   };
 
@@ -117,6 +124,7 @@ const Dashboard: React.FC = () => {
       setTransformations((prev) => [result, ...prev]);
     } catch (error) {
       console.error("Error creating transformation:", error);
+      alert("Failed to upload and transform the file. Please try again.");
     }
   };
 
@@ -128,20 +136,17 @@ const Dashboard: React.FC = () => {
         value={selectedVoiceModel || ""}
       >
         <option value="" disabled>
-          Select a Voice Model
+          {voiceModels.length === 0
+            ? "No Voice Models Available"
+            : "Select a Voice Model"}
         </option>
-        {voiceModels.length > 0 ? (
-          voiceModels.map((model) => (
-            <option key={model.id} value={model.id}>
-              {model.name} - {model.description}
-            </option>
-          ))
-        ) : (
-          <option value="" disabled>
-            No models available
+        {voiceModels.map((model) => (
+          <option key={model.id} value={model.id}>
+            {model.name} - {model.description}
           </option>
-        )}
+        ))}
       </select>
+
       <input
         type="file"
         onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
@@ -149,24 +154,28 @@ const Dashboard: React.FC = () => {
       <button onClick={handleUpload}>Upload and Transform</button>
 
       <h2>Your Transformations</h2>
-      <ul>
-        {transformations.map((t) => (
-          <li key={t._id}>
-            ID: {t._id}, Status: {t.status}, Job ID: {t.jobId}
-            {t.status === "success" && t.outputFileUrl && (
-              <div>
-                <a
-                  href={t.outputFileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Download Converted File
-                </a>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+      {transformations.length === 0 ? (
+        <p>No transformations available yet. Upload a file to get started!</p>
+      ) : (
+        <ul>
+          {transformations.map((t) => (
+            <li key={t._id}>
+              ID: {t._id}, Status: {t.status}, Job ID: {t.jobId}
+              {t.status === "success" && t.outputFileUrl && (
+                <div>
+                  <a
+                    href={t.outputFileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Download Converted File
+                  </a>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

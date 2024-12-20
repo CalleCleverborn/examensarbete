@@ -7,8 +7,8 @@ export interface ITransformation extends Document {
   status: string;
   jobStartTime: Date;
   jobEndTime?: Date;
-  originalFileUrl: string;
-  outputFileUrl?: string; 
+  originalFileUrl?: string; 
+  outputFileUrl?: string;
 }
 
 const TransformationSchema = new Schema<ITransformation>({
@@ -18,8 +18,8 @@ const TransformationSchema = new Schema<ITransformation>({
   status: { type: String, required: true },
   jobStartTime: { type: Date, default: Date.now },
   jobEndTime: { type: Date },
-  originalFileUrl: { type: String, required: true },
-  outputFileUrl: { type: String }, 
+  originalFileUrl: { type: String, required: false }, 
+  outputFileUrl: { type: String },
 });
 
 export default mongoose.model<ITransformation>("Transformation", TransformationSchema);

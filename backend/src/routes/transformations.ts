@@ -1,6 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
 import axios from "axios";
-import fs from "fs";
 import FormData from "form-data";
 import mongoose from "mongoose";
 import requireAuth from "../middleware/auth";
@@ -34,7 +33,7 @@ router.post(
 
       const form = new FormData();
       form.append("voiceModelId", voiceModelId);
-      form.append("soundFile", fs.createReadStream(req.file.path));
+      form.append("soundFile", req.file.buffer, req.file.originalname);
 
       const response = await axios.postForm(
         "https://arpeggi.io/api/kits/v1/voice-conversions",
@@ -50,7 +49,6 @@ router.post(
         jobId: job.id,
         status: job.status,
         jobStartTime: job.jobStartTime,
-        originalFileUrl: req.file.path,
       });
 
       res.status(201).json({

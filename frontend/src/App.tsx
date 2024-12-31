@@ -5,8 +5,12 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
+
+import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
+import MyPlan from "./pages/MyPlan";
+import About from "./pages/About";
 
 interface User {
   name?: string;
@@ -32,14 +36,17 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={user ? <Navigate to="/dashboard" replace /> : <Login />}
+          element={user ? <Navigate to="/app/dashboard" replace /> : <Login />}
         />
+
         <Route
-          path="/dashboard"
-          element={
-            user ? <Dashboard user={user} /> : <Navigate to="/" replace />
-          }
-        />
+          path="/app"
+          element={user ? <Layout /> : <Navigate to="/" replace />}
+        >
+          <Route path="dashboard" element={<Dashboard user={user} />} />
+          <Route path="my-plan" element={<MyPlan />} />
+          <Route path="about" element={<About />} />
+        </Route>
       </Routes>
     </Router>
   );

@@ -1,0 +1,26 @@
+.page-numbers {
+    display: flex;
+    gap: 25px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.page-number {
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+
+    &:hover {
+        color: #ccc;
+    }
+
+    &.active {
+        color: #eed202;
+        font-weight: 700;
+    }
+}
+
+.page-dots {
+    cursor: default;
+    color: #999;
+}

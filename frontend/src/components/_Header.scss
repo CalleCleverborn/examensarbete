@@ -1,0 +1,53 @@
+@use "../styles/variables" as v;
+@use "../styles/mixins";
+
+header {
+    display: flex;
+    height: 100px;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #232323;
+
+    @include mixins.desktop {
+        padding-left: 150px;
+        padding-right: 150px;
+        justify-content: space-between;
+    }
+    h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: bolder;
+        color: #eed202;
+        display: none;
+        @include mixins.desktop {
+            display: block;
+        }
+    }
+
+    nav {
+        display: flex;
+        flex-direction: row;
+        ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 40px;
+            align-items: center;
+
+            @include mixins.desktop {
+                gap: 100px;
+            }
+
+            li {
+                a {
+                    font-size: 16px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    text-decoration: none;
+                    color: white;
+                }
+            }
+        }
+    }
+}

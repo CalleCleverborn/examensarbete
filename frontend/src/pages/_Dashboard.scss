@@ -1,0 +1,72 @@
+@use "../styles/variables" as v;
+@use "../styles/mixins";
+
+.transformation-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 24px;
+    height: auto;
+    width: 100%;
+    padding-top: 50px;
+    padding-bottom: 50px;
+
+    @include mixins.desktop {
+        flex-direction: row;
+        padding-left: 150px;
+        padding-right: 150px;
+    }
+}
+
+.transform-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 130px;
+    height: 40px;
+    background-color: #232323;
+    color: #eed202;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 15px;
+}
+
+.model-list-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 60%;
+    width: 100%;
+    //padding-bottom: 50px;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+
+    @include mixins.desktop {
+        padding-left: 150px;
+        padding-right: 150px;
+    }
+    h3 {
+        margin: 0;
+        float: left;
+        color: #eed202;
+        font-size: 16px;
+        font-weight: 700;
+    }
+}
+
+.model-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 25px;
+
+    @include mixins.desktop {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, auto);
+    }
+
+    @include mixins.mobile {
+        grid-template-columns: 1fr;
+    }
+}

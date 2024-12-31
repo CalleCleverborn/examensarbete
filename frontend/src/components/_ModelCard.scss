@@ -1,0 +1,70 @@
+@use "../styles/mixins";
+@use "../styles/variables" as v;
+
+p {
+    margin: 0;
+}
+
+h2 {
+    margin: 0;
+}
+
+.model {
+    position: relative;
+    padding: 20px;
+    width: 240px;
+    height: 220px;
+    background-color: #232323;
+    border-radius: 20px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #303030;
+    }
+
+    &.selected {
+        outline: 2px solid #eed202; // Use outline instead of border
+        outline-offset: -2px; // Optional: Offset the outline to make it appear closer
+        z-index: 10;
+    }
+
+    .avatar {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 75px;
+        height: 75px;
+        border-radius: 50%;
+        object-fit: cover;
+        pointer-events: none;
+    }
+
+    .avatar-skeleton {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 75px;
+        height: 75px;
+        border-radius: 50%;
+        background-color: #2e2e2e;
+        animation: skeletonPulse 0.5s ease-in-out infinite alternate;
+        pointer-events: none;
+    }
+}
+
+.model-skeleton {
+    width: 240px;
+    height: 220px;
+    background-color: #2e2e2e;
+    border-radius: 20px;
+    animation: skeletonPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes skeletonPulse {
+    0% {
+        background-color: #2e2e2e;
+    }
+    100% {
+        background-color: #3a3a3a;
+    }
+}

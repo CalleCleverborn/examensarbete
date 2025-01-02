@@ -1,6 +1,10 @@
+@use "../styles/variables" as v;
+@use "../styles/mixins";
+
 .plan-page {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 50px;
     padding: 50px;
 }
@@ -21,8 +25,13 @@ h3 {
 
 .plans-wrapper {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: 75px;
+    @include mixins.desktop {
+        flex-direction: row;
+    }
 }
 
 .plan {

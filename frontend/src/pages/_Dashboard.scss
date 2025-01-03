@@ -8,6 +8,27 @@
     align-items: center;
 }
 
+.dashboard-message {
+    color: white;
+    font-size: 16px;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.plan-info {
+    color: white;
+    margin-bottom: 20px;
+    text-align: center;
+
+    h2 {
+        margin: 0 0 10px 0;
+    }
+
+    p {
+        margin: 0 0 10px 0;
+    }
+}
+
 .transformation-wrapper {
     display: flex;
     justify-content: center;

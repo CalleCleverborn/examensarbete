@@ -44,6 +44,10 @@ h3 {
     padding: 20px;
     border-radius: 20px;
 
+    &.selected {
+        outline: 2px solid #eed202;
+    }
+
     ul {
         display: flex;
         flex-direction: column;

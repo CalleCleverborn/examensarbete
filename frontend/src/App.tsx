@@ -43,7 +43,10 @@ function App() {
           path="/app"
           element={user ? <Layout /> : <Navigate to="/" replace />}
         >
-          <Route path="dashboard" element={<Dashboard user={user} />} />
+          <Route
+            path="dashboard"
+            element={<Dashboard user={user || undefined} />}
+          />
           <Route path="my-plan" element={<MyPlan />} />
           <Route path="about" element={<About />} />
         </Route>

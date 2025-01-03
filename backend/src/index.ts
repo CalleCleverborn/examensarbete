@@ -6,9 +6,11 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import session from 'express-session';
 import passport from './auth/passport';
-
+import plansRouter from './routes/plans';
 import authRouter from './routes/auth';
 import transformationsRouter from './routes/transformations';
+import stripeRouter from './routes/stripe';
+import Plan from '../models/Plan';
 
 const port = process.env.PORT || 4000;
 const mongodbUri = process.env.MONGODB_URI;
@@ -20,6 +22,46 @@ if (!mongodbUri) {
 mongoose.connect(mongodbUri)
   .then(() => console.log("Connected to MongoDB"))
   .catch(err => console.error("Error connecting to MongoDB", err));
+
+
+async function seedPlans() {
+  const count = await Plan.countDocuments();
+  if (count === 0) {
+    await Plan.insertMany([
+      {
+        name: "Base",
+        price: 0,
+        conversionsPerMonth: 5,
+        voiceModelLimit: 16,
+        downloadTime: 10,
+      },
+      {
+        name: "Premium",
+        price: 12.99,
+        conversionsPerMonth: 100,
+        voiceModelLimit: 99999,
+        downloadTime: 60,
+      },
+      {
+        name: "Enterprise",
+        price: 29.99,
+        conversionsPerMonth: 99999, 
+        voiceModelLimit: 99999,
+        downloadTime: 99999,       
+      },
+    ]);
+    console.log("Plans seeded successfully.");
+  } else {
+    console.log("Plans already exist. Skipping seeding.");
+  }
+}
+
+mongoose.connect(mongodbUri).then(async () => {
+  console.log("Connected to MongoDB");
+  await seedPlans(); 
+})
+.catch(err => console.error("Error connecting to MongoDB", err));
+
 
 const app = express();
 
@@ -46,6 +88,8 @@ app.get('/', (req, res) => {
 
 app.use('/auth', authRouter);
 app.use('/api/transformations', transformationsRouter);
+app.use('/api/plans', plansRouter);
+app.use("/api/stripe", stripeRouter);
 
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`);

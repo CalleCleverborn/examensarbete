@@ -12,7 +12,7 @@ const userSchema = new Schema<IUser>({
   googleId: { type: String, unique: true, sparse: true },
   email: { type: String, required: true, unique: true },
   name: { type: String },
-  subscriptionPlan: { type: String, default: "free" },
+  subscriptionPlan: { type: String, default: "Base" },
   usedTransformations: { type: Number, default: 0 }
 });
 

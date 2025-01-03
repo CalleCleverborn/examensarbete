@@ -1,15 +1,18 @@
-import { Router, Request, Response, NextFunction } from "express";
+// backend/src/routes/transformations.ts
+
+import { Router, Request, Response } from "express";
 import axios from "axios";
 import FormData from "form-data";
 import mongoose from "mongoose";
 import requireAuth from "../middleware/auth";
 import upload from "../middleware/upload";
 import Transformation from "../../models/Transformation";
+import Plan from "../../models/Plan";
+import User from "../../models/User";
 
 const router = Router();
 
-
-router.post("/", requireAuth, upload.single("soundFile"), async (req: any, res: Response, next: NextFunction) => {
+router.post("/", requireAuth, upload.single("soundFile"), async (req: any, res: Response): Promise<void> => {
   try {
     const { voiceModelId } = req.body;
 
@@ -22,16 +25,37 @@ router.post("/", requireAuth, upload.single("soundFile"), async (req: any, res: 
       return;
     }
 
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      res.status(401).json({ error: "User not found" });
+      return;
+    }
+
+  
+    const plan = await Plan.findOne({ name: user.subscriptionPlan });
+    if (!plan) {
+      res.status(400).json({ error: "Invalid subscription plan" });
+      return;
+    }
+
+   
+    if (plan.conversionsPerMonth !== 99999) {
+      if ((user.usedTransformations || 0) >= plan.conversionsPerMonth) {
+        res.status(403).json({ error: "You have reached your monthly transformations limit." });
+        return;
+      }
+    }
+
     const kitsApiKey = process.env.KITS_API_KEY;
     if (!kitsApiKey) {
       res.status(500).json({ error: "KITS_API_KEY not configured" });
       return;
     }
 
+    
     const form = new FormData();
     form.append("voiceModelId", voiceModelId);
     form.append("soundFile", req.file.buffer, req.file.originalname);
-
 
     const response = await axios.postForm(
       "https://arpeggi.io/api/kits/v1/voice-conversions",
@@ -43,7 +67,7 @@ router.post("/", requireAuth, upload.single("soundFile"), async (req: any, res: 
     );
 
     const job = response.data;
-    
+
 
     const newTransformation = await Transformation.create({
       userId: req.user._id,
@@ -54,32 +78,37 @@ router.post("/", requireAuth, upload.single("soundFile"), async (req: any, res: 
     });
 
   
+    user.usedTransformations = (user.usedTransformations || 0) + 1;
+    await user.save();
+
     res.status(201).json({
       _id: newTransformation._id,
       jobId: job.id,
       status: job.status,
     });
+    return;
   } catch (error: any) {
     console.error("Error creating transformation:", error.message);
     res.status(500).json({ error: "Failed to create voice conversion job" });
+    return;
   }
 });
 
 
-router.get("/", requireAuth, async (req: any, res: Response) => {
+router.get("/", requireAuth, async (req: any, res: Response): Promise<void> => {
   try {
-    const transformations = await Transformation.find({ userId: req.user._id })
-      .sort({ createdAt: -1 });
-
+    const transformations = await Transformation.find({ userId: req.user._id }).sort({ createdAt: -1 });
     res.status(200).json({ data: transformations });
+    return;
   } catch (error: any) {
     console.error("Error fetching transformations:", error.message);
     res.status(500).json({ error: "Failed to fetch transformations" });
+    return;
   }
 });
 
 
-router.get("/voice-models", requireAuth, async (req: Request, res: Response) => {
+router.get("/voice-models", requireAuth, async (req: any, res: Response): Promise<void> => {
   try {
     const kitsApiKey = process.env.KITS_API_KEY;
     if (!kitsApiKey) {
@@ -87,37 +116,75 @@ router.get("/voice-models", requireAuth, async (req: Request, res: Response) => 
       return;
     }
 
-    const page = parseInt(req.query.page as string, 10) || 1;
-    const perPage = parseInt(req.query.perPage as string, 10) || 8;
-    const order = (req.query.order as string) || "asc";
 
-  
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      res.status(401).json({ error: "User not found" });
+      return;
+    }
+
+    const plan = await Plan.findOne({ name: user.subscriptionPlan });
+    if (!plan) {
+      res.status(400).json({ error: "Invalid subscription plan" });
+      return;
+    }
+
+
     const response = await axios.get("https://arpeggi.io/api/kits/v1/voice-models", {
       headers: { Authorization: `Bearer ${kitsApiKey}` },
-      params: { page, perPage, order },
+      params: {
+        page: 1,
+        perPage: 1000,
+        order: "asc",
+      },
     });
 
-  
-    const mappedData = (response.data.data || []).map((model: any) => ({
+
+    let allModels = (response.data.data || []).map((model: any) => ({
       id: model.id,
       title: model.title,
       tags: model.tags ? model.tags.join(", ") : "",
-      imageUrl: model.imageUrl || "https://via.placeholder.com/60", 
+      imageUrl: model.imageUrl || "https://via.placeholder.com/60",
     }));
 
+
+    if (plan.voiceModelLimit !== 99999) {
+      allModels = allModels.slice(0, plan.voiceModelLimit);
+    }
+
+
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const perPage = parseInt(req.query.perPage as string, 10) || 8;
+    const startIndex = (page - 1) * perPage;
+    const endIndex = startIndex + perPage;
+
+    const paginatedModels = allModels.slice(startIndex, endIndex);
+
+    const total = allModels.length;
+    const lastPage = Math.ceil(total / perPage);
+
+    const meta = {
+      currentPage: page,
+      lastPage,
+      perPage,
+      total,
+    };
+
+
     res.status(200).json({
-      data: mappedData,
-      meta: response.data.meta, 
+      data: paginatedModels,
+      meta,
     });
+    return;
   } catch (error: any) {
     console.error("Error fetching voice models:", error.response?.data || error.message);
     res.status(500).json({ error: "Failed to fetch voice models" });
+    return;
   }
 });
 
 
-
-router.get("/:id", requireAuth, async (req: any, res: Response) => {
+router.get("/:id", requireAuth, async (req: any, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -140,11 +207,10 @@ router.get("/:id", requireAuth, async (req: any, res: Response) => {
       return;
     }
 
+
     const response = await axios.get(
       `https://arpeggi.io/api/kits/v1/voice-conversions/${transformation.jobId}`,
-      {
-        headers: { Authorization: `Bearer ${kitsApiKey}` },
-      }
+      { headers: { Authorization: `Bearer ${kitsApiKey}` } }
     );
 
     const updatedJob = response.data;
@@ -161,9 +227,11 @@ router.get("/:id", requireAuth, async (req: any, res: Response) => {
       jobId: transformation.jobId,
       outputFileUrl: transformation.outputFileUrl,
     });
+    return;
   } catch (error: any) {
     console.error("Error fetching transformation:", error.message);
     res.status(500).json({ error: "Failed to fetch transformation" });
+    return;
   }
 });
 

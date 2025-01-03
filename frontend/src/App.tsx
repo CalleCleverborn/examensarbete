@@ -47,7 +47,8 @@ function App() {
             path="dashboard"
             element={<Dashboard user={user || undefined} />}
           />
-          <Route path="my-plan" element={<MyPlan />} />
+
+          <Route path="my-plan" element={<MyPlan user={user} />} />
           <Route path="about" element={<About />} />
         </Route>
       </Routes>

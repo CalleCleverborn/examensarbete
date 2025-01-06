@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import MyPlan from "./pages/MyPlan";
 import About from "./pages/About";
+import Logout from "./pages/Logout";
 
 interface User {
   name?: string;
@@ -47,9 +48,9 @@ function App() {
             path="dashboard"
             element={<Dashboard user={user || undefined} />}
           />
-
           <Route path="my-plan" element={<MyPlan user={user} />} />
           <Route path="about" element={<About />} />
+          <Route path="logout" element={<Logout setUser={setUser} />} />
         </Route>
       </Routes>
     </Router>

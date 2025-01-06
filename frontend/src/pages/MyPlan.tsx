@@ -12,6 +12,8 @@ interface Plan {
   conversionsPerMonth: number;
   voiceModelLimit: number;
   downloadTime: number;
+  description: string;
+  bulletPoints: string[];
 }
 
 interface MyPlanProps {
@@ -32,7 +34,7 @@ const MyPlan: React.FC<MyPlanProps> = ({ user }) => {
         if (!response.ok) {
           throw new Error(`Failed to fetch plans. Status: ${response.status}`);
         }
-        const data = await response.json();
+        const data: Plan[] = await response.json();
         setPlans(data);
       } catch (err) {
         console.error("Error fetching plans:", err);
@@ -68,11 +70,13 @@ const MyPlan: React.FC<MyPlanProps> = ({ user }) => {
 
   return (
     <div className="plan-page">
-      <h1>Payment and pricing</h1>
+      <h1>Payment and Pricing</h1>
 
       <div className="plans-wrapper">
         {plans.map((plan) => {
           const isSelected = user?.subscriptionPlan === plan.name;
+          const displayPrice =
+            plan.price === 0 ? "Free" : `$${plan.price.toFixed(2)}`;
 
           return (
             <div
@@ -81,56 +85,26 @@ const MyPlan: React.FC<MyPlanProps> = ({ user }) => {
             >
               <div className="title-desc-box">
                 <h3>{plan.name}</h3>
-                <p>
-                  {plan.name === "Base"
-                    ? "For hobby use"
-                    : plan.name === "Premium"
-                      ? "For more professional use"
-                      : plan.name === "Enterprise"
-                        ? "For studio grade creation"
-                        : "Some plan description"}
-                </p>
+
+                <p>{plan.description}</p>
               </div>
 
-              <h2>{plan.price === 0 ? "Free" : `$${plan.price.toFixed(2)}`}</h2>
+              <h2>{displayPrice}</h2>
 
               <ul>
-                <li>
-                  <span>✓ </span>
-                  <span>
-                    {plan.conversionsPerMonth === 99999
-                      ? "Unlimited conversions"
-                      : `${plan.conversionsPerMonth} conversions per month`}
-                  </span>
-                </li>
-                <li>
-                  <span>✓ </span>
-                  <span>
-                    {plan.voiceModelLimit === 99999
-                      ? "Access Every Voice Model"
-                      : `${plan.voiceModelLimit} voice models`}
-                  </span>
-                </li>
-                <li>
-                  <span>✓ </span>
-                  <span>
-                    {plan.downloadTime === 99999
-                      ? "Unlimited download time"
-                      : `${plan.downloadTime} minutes download time`}
-                  </span>
-                </li>
-                <li>
-                  <span>✓ </span>
-                  <span>Wav download format</span>
-                </li>
+                {plan.bulletPoints.map((point, idx) => (
+                  <li key={idx}>
+                    <span>✓ </span>
+                    <span>{point}</span>
+                  </li>
+                ))}
               </ul>
 
               <div
-                className="select-plan-button"
+                className={`select-plan-button ${isSelected ? "disabled" : ""}`}
                 onClick={
-                  isSelected ? undefined : () => handleChangePlan(plan.name)
+                  !isSelected ? () => handleChangePlan(plan.name) : undefined
                 }
-                style={{ cursor: isSelected ? "not-allowed" : "pointer" }}
               >
                 {isSelected ? "Selected" : "Change plan"}
               </div>

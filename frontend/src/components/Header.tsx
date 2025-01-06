@@ -12,7 +12,7 @@ const Header: React.FC = () => {
             <Link to="/app/dashboard">Dashboard</Link>
           </li>
           <li>
-            <Link to="/app/my-plan">My Plan</Link>
+            <Link to="/app/my-plan">Plan</Link>
           </li>
           <li>
             <Link to="/app/about">About</Link>

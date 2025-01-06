@@ -23,8 +23,8 @@ h2 {
     }
 
     &.selected {
-        outline: 2px solid #eed202; // Use outline instead of border
-        outline-offset: -2px; // Optional: Offset the outline to make it appear closer
+        outline: 2px solid #eed202;
+        outline-offset: -2px;
         z-index: 10;
     }
 

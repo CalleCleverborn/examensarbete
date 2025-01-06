@@ -93,7 +93,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
           <div className="dashboard-message">Loading your plan info...</div>
         ) : plan ? (
           <>
-            <h2>Hello, {user.name || "User"}!</h2>
             {plan.conversionsPerMonth === 99999 ? (
               <>
                 <p>
@@ -130,13 +129,15 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
           selectedFile={selectedFile}
           onFileSelected={(file) => setSelectedFile(file)}
         />
-
-        <div
-          className="transform-button"
-          onClick={!loadingTransform ? handleTransformClick : undefined}
-          style={{ cursor: loadingTransform ? "not-allowed" : "pointer" }}
-        >
-          {loadingTransform ? "Transforming..." : "3.Transform"}
+        <div className="button-info-box">
+          {" "}
+          <div
+            className="transform-button"
+            onClick={!loadingTransform ? handleTransformClick : undefined}
+            style={{ cursor: loadingTransform ? "not-allowed" : "pointer" }}
+          >
+            {loadingTransform ? "Transforming..." : "3.Transform"}
+          </div>
         </div>
 
         <div className="file-output-box">

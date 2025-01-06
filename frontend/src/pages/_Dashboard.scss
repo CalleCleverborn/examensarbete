@@ -16,17 +16,12 @@
 }
 
 .plan-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     color: white;
-    margin-bottom: 20px;
+    margin-top: 50px;
     text-align: center;
-
-    h2 {
-        margin: 0 0 10px 0;
-    }
-
-    p {
-        margin: 0 0 10px 0;
-    }
 }
 
 .transformation-wrapper {
@@ -93,4 +88,11 @@
     @include mixins.mobile {
         grid-template-columns: 1fr;
     }
+}
+
+.button-info-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }

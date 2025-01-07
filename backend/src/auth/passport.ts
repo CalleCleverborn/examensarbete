@@ -23,7 +23,7 @@ passport.use(
       try {
         let user = await User.findOne({ googleId: profile.id });
         if (!user) {
-          console.log("User not found, creating new user");
+          
           user = await User.create({
             googleId: profile.id,
             email: profile.emails && profile.emails[0] ? profile.emails[0].value : '',

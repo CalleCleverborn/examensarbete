@@ -1,5 +1,3 @@
-// backend/src/routes/transformations.ts
-
 import { Router, Request, Response } from "express";
 import axios from "axios";
 import FormData from "form-data";
@@ -11,6 +9,7 @@ import Plan from "../../models/Plan";
 import User from "../../models/User";
 
 const router = Router();
+
 
 router.post("/", requireAuth, upload.single("soundFile"), async (req: any, res: Response): Promise<void> => {
   try {
@@ -51,10 +50,26 @@ router.post("/", requireAuth, upload.single("soundFile"), async (req: any, res: 
       return;
     }
 
-    
+ 
     const form = new FormData();
     form.append("voiceModelId", voiceModelId);
     form.append("soundFile", req.file.buffer, req.file.originalname);
+
+
+    const originalFilename = req.file.originalname;
+
+ 
+    let voiceModelName = "";
+    try {
+      const modelResponse = await axios.get(
+        `https://arpeggi.io/api/kits/v1/voice-models/${voiceModelId}`,
+        { headers: { Authorization: `Bearer ${kitsApiKey}` } }
+      );
+      voiceModelName = modelResponse.data?.title || "";
+    } catch (err) {
+      console.warn("Could not fetch voiceModelName for ID:", voiceModelId);
+   
+    }
 
 
     const response = await axios.postForm(
@@ -68,19 +83,22 @@ router.post("/", requireAuth, upload.single("soundFile"), async (req: any, res: 
 
     const job = response.data;
 
-
+   
     const newTransformation = await Transformation.create({
       userId: req.user._id,
       voiceModelId: Number(voiceModelId),
       jobId: job.id,
       status: job.status,
       jobStartTime: job.jobStartTime ? new Date(job.jobStartTime) : new Date(),
+      originalFilename, 
+      voiceModelName,   
     });
 
-
+ 
     user.usedTransformations = (user.usedTransformations || 0) + 1;
     await user.save();
 
+ 
     res.status(201).json({
       _id: newTransformation._id,
       jobId: job.id,
@@ -137,7 +155,6 @@ router.get("/voice-models", requireAuth, async (req: any, res: Response): Promis
       },
     });
 
-
     let allModels = (response.data.data || []).map((model: any) => ({
       id: model.id,
       title: model.title,
@@ -166,11 +183,7 @@ router.get("/voice-models", requireAuth, async (req: any, res: Response): Promis
       total,
     };
 
-
-    res.status(200).json({
-      data: paginatedModels,
-      meta,
-    });
+    res.status(200).json({ data: paginatedModels, meta });
     return;
   } catch (error: any) {
     console.error("Error fetching voice models:", error.response?.data || error.message);
@@ -227,6 +240,35 @@ router.get("/:id", requireAuth, async (req: any, res: Response): Promise<void> =
   } catch (error: any) {
     console.error("Error fetching transformation:", error.message);
     res.status(500).json({ error: "Failed to fetch transformation" });
+    return;
+  }
+});
+
+
+router.delete("/:id", requireAuth, async (req: any, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400).json({ error: "Invalid transformation ID" });
+      return;
+    }
+
+    const transformation = await Transformation.findOne({
+      _id: id,
+      userId: req.user._id,
+    });
+    if (!transformation) {
+      res.status(404).json({ error: "Transformation not found" });
+      return;
+    }
+
+    await transformation.deleteOne();
+
+    res.status(200).json({ message: "Transformation deleted" });
+    return;
+  } catch (error: any) {
+    console.error("Error deleting transformation:", error.message);
+    res.status(500).json({ error: "Failed to delete transformation" });
     return;
   }
 });

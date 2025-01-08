@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 
 interface Transformation {
@@ -5,13 +6,33 @@ interface Transformation {
   jobId: number;
   status: string;
   outputFileUrl?: string;
+
+
+  originalFilename?: string;
+  voiceModelId?: number;
+  jobStartTime?: string;
+  jobEndTime?: string;
 }
 
-export function useTransformations() {
+interface UseTransformations {
+  latestTransformation: Transformation | null;
+  loadingTransform: boolean;
+  handleTransform: (selectedFile: File, voiceModelId: number) => Promise<void>;
+  transformations: Transformation[];
+  loadingList: boolean;
+  errorList: string | null;
+  fetchAllTransformations: () => Promise<void>;
+  deleteTransformation: (id: string) => Promise<void>;
+}
+
+export function useTransformations(): UseTransformations {
+
   const [latestTransformation, setLatestTransformation] =
     useState<Transformation | null>(null);
   const [loadingTransform, setLoadingTransform] = useState(false);
-
+  const [transformations, setTransformations] = useState<Transformation[]>([]);
+  const [loadingList, setLoadingList] = useState(false);
+  const [errorList, setErrorList] = useState<string | null>(null);
 
   useEffect(() => {
     if (!latestTransformation) return;
@@ -67,9 +88,62 @@ export function useTransformations() {
     }
   }
 
+  async function fetchAllTransformations(): Promise<void> {
+    setLoadingList(true);
+    setErrorList(null);
+    try {
+      const res = await fetch("http://localhost:4000/api/transformations", {
+        credentials: "include",
+      });
+      if (!res.ok) {
+        throw new Error(
+          `Failed to fetch transformations. Status: ${res.status}`
+        );
+      }
+      const json = await res.json();
+
+      setTransformations(json.data || []);
+    } catch (err: any) {
+      console.error("Error fetching transformations:", err);
+      setErrorList(err.message || "Failed to fetch transformations.");
+    } finally {
+      setLoadingList(false);
+    }
+  }
+
+
+  async function deleteTransformation(id: string): Promise<void> {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this transformation?"
+    );
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`http://localhost:4000/api/transformations/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        throw new Error(`Delete failed with status: ${res.status}`);
+      }
+    
+      setTransformations((prev) => prev.filter((t) => t._id !== id));
+    } catch (err) {
+      console.error("Error deleting transformation:", err);
+      alert("Failed to delete transformation.");
+    }
+  }
+
+
   return {
+
     latestTransformation,
     loadingTransform,
     handleTransform,
+    transformations,
+    loadingList,
+    errorList,
+    fetchAllTransformations,
+    deleteTransformation,
   };
 }

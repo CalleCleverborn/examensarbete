@@ -1,100 +1,95 @@
-import React, { useEffect, useState } from "react";
-
-interface Transformation {
-  _id: string;
-  jobId: string;
-  status: string;
-  jobStartTime?: string;
-  jobEndTime?: string;
-  originalFileUrl?: string;
-  outputFileUrl?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
+import React, { useEffect } from "react";
+import { useTransformations } from "../hooks/useTransformations";
+import { useVoiceModels } from "../hooks/useVoiceModels";
+import "./_MyTransformations.scss";
 
 const MyTransformations: React.FC = () => {
-  const [transformations, setTransformations] = useState<Transformation[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    transformations,
+    loadingList,
+    errorList,
+    fetchAllTransformations,
+    deleteTransformation,
+  } = useTransformations();
+
+  const { voiceModels, loadingModels } = useVoiceModels();
 
   useEffect(() => {
-    const fetchTransformations = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const res = await fetch("http://localhost:4000/api/transformations", {
-          credentials: "include",
-        });
-        if (!res.ok) {
-          throw new Error(
-            `Failed to fetch transformations. Status: ${res.status}`
-          );
-        }
-
-        const json = await res.json();
-        setTransformations(json.data || []);
-      } catch (err: any) {
-        console.error("Error fetching transformations:", err);
-        setError(err.message || "Failed to fetch transformations");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTransformations();
+    fetchAllTransformations();
   }, []);
 
+  if (loadingList || loadingModels) {
+    return <p>Loading transformations...</p>;
+  }
+
+  if (errorList) {
+    return <p style={{ color: "red" }}>{errorList}</p>;
+  }
+
+  if (transformations.length === 0) {
+    return <p>No transformations found.</p>;
+  }
+
   return (
-    <div>
-      <h1>My Transformations</h1>
+    <div className="transformation-list">
+      {transformations.map((t) => {
+        const fileName =
+          t.originalFilename && t.originalFilename.trim() !== ""
+            ? t.originalFilename
+            : "Unknown file";
 
-      {loading && <p>Loading transformations...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {!loading && !error && transformations.length === 0 && (
-        <p>No transformations found.</p>
-      )}
+        let modelName = "Unknown model";
+        if (t.voiceModelId) {
+          const found = voiceModels.find((vm) => vm.id === t.voiceModelId);
+          if (found && found.title.trim() !== "") {
+            modelName = found.title;
+          }
+        }
 
-      {!loading && !error && transformations.length > 0 && (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {transformations.map((t) => {
-            const start = t.jobStartTime || t.createdAt;
-            const startDate = start ? new Date(start) : null;
+        const dateStr = t.jobStartTime
+          ? new Date(t.jobStartTime).toLocaleDateString()
+          : "";
 
-            return (
-              <li
-                key={t._id}
-                style={{
-                  margin: "15px 0",
-                  border: "1px solid #444",
-                  padding: "10px",
-                }}
-              >
-                <p>
-                  <strong>Status:</strong> {t.status}
-                </p>
-                <p>
-                  <strong>Job Start:</strong>{" "}
-                  {startDate ? startDate.toLocaleString() : "N/A"}
-                </p>
+        const statusClass = t.status.toLowerCase();
 
-                {t.outputFileUrl && t.status === "success" ? (
-                  <p>
-                    <strong>Output File:</strong>{" "}
-                    <a href={t.outputFileUrl} target="_blank" rel="noreferrer">
-                      Download
-                    </a>
-                  </p>
-                ) : (
-                  <p>
-                    <strong>Output File:</strong> No output yet
-                  </p>
+        return (
+          <div key={t._id} className="transformation-item">
+            <div className="left-section">
+              <div className="original-file">{fileName}</div>
+              <div className="voice-model-id">Model: {modelName}</div>
+              <div className="date-and-status">
+                <span className={`status ${statusClass}`}>{t.status}</span>
+                {dateStr && (
+                  <span className="job-start-time"> | {dateStr}</span>
                 )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+              </div>
+            </div>
+
+            <div className="right-section">
+              {t.status === "success" && t.outputFileUrl ? (
+                <audio className="audio-preview" controls src={t.outputFileUrl}>
+                  Your browser does not support the audio element.
+                </audio>
+              ) : (
+                <div className="fallback-info">
+                  {t.status === "running"
+                    ? "Processing..."
+                    : t.status === "failed"
+                      ? "Failed"
+                      : "No preview"}
+                </div>
+              )}
+
+              <button
+                className="delete-button"
+                onClick={() => deleteTransformation(t._id)}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

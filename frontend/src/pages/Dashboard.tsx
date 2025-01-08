@@ -33,6 +33,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
   const { voiceModels, pageMeta, page, setPage, loadingModels } =
     useVoiceModels();
+
   const { latestTransformation, loadingTransform, handleTransform } =
     useTransformations();
 
@@ -76,6 +77,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       alert("Please select a file and a voice model first.");
       return;
     }
+
     await handleTransform(selectedFile, selectedVoiceModel);
   }
 
@@ -83,7 +85,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   const outputFileUrl = latestTransformation?.outputFileUrl;
 
   if (!user) {
-    return;
+    return null;
   }
 
   return (
@@ -129,8 +131,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
           selectedFile={selectedFile}
           onFileSelected={(file) => setSelectedFile(file)}
         />
+
         <div className="button-info-box">
-          {" "}
           <div
             className="transform-button"
             onClick={!loadingTransform ? handleTransformClick : undefined}

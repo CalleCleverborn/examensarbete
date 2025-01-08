@@ -1,4 +1,4 @@
-// backend/models/Transformation.ts
+
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface ITransformation extends Document {
@@ -8,10 +8,11 @@ export interface ITransformation extends Document {
   status: string;
   jobStartTime: Date;
   jobEndTime?: Date;
-  originalFileUrl?: string;
+  originalFilename?: string;  
+  voiceModelName?: string;   
   outputFileUrl?: string;
-  createdAt: Date;  
-  updatedAt: Date;  
+  createdAt: Date;            
+  updatedAt: Date;        
 }
 
 const TransformationSchema = new Schema<ITransformation>(
@@ -20,10 +21,10 @@ const TransformationSchema = new Schema<ITransformation>(
     voiceModelId: { type: Number, required: true },
     jobId: { type: String, required: true },
     status: { type: String, required: true },
-    
     jobStartTime: { type: Date, default: Date.now },
     jobEndTime: { type: Date },
-    originalFileUrl: { type: String },
+    originalFilename: { type: String }, 
+    voiceModelName: { type: String },   // new
     outputFileUrl: { type: String },
   },
   {

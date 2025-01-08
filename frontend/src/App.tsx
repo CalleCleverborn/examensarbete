@@ -10,8 +10,8 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import MyPlan from "./pages/MyPlan";
-import About from "./pages/About";
 import Logout from "./pages/Logout";
+import MyTransformations from "./pages/MyTransformations";
 
 interface User {
   name?: string;
@@ -49,7 +49,7 @@ function App() {
             element={<Dashboard user={user || undefined} />}
           />
           <Route path="my-plan" element={<MyPlan user={user} />} />
-          <Route path="about" element={<About />} />
+          <Route path="my-transformations" element={<MyTransformations />} />
           <Route path="logout" element={<Logout setUser={setUser} />} />
         </Route>
       </Routes>

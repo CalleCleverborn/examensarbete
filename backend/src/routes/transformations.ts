@@ -31,14 +31,13 @@ router.post("/", requireAuth, upload.single("soundFile"), async (req: any, res: 
       return;
     }
 
-  
     const plan = await Plan.findOne({ name: user.subscriptionPlan });
     if (!plan) {
       res.status(400).json({ error: "Invalid subscription plan" });
       return;
     }
 
-   
+  
     if (plan.conversionsPerMonth !== 99999) {
       if ((user.usedTransformations || 0) >= plan.conversionsPerMonth) {
         res.status(403).json({ error: "You have reached your monthly transformations limit." });
@@ -57,6 +56,7 @@ router.post("/", requireAuth, upload.single("soundFile"), async (req: any, res: 
     form.append("voiceModelId", voiceModelId);
     form.append("soundFile", req.file.buffer, req.file.originalname);
 
+
     const response = await axios.postForm(
       "https://arpeggi.io/api/kits/v1/voice-conversions",
       form,
@@ -74,10 +74,10 @@ router.post("/", requireAuth, upload.single("soundFile"), async (req: any, res: 
       voiceModelId: Number(voiceModelId),
       jobId: job.id,
       status: job.status,
-      jobStartTime: job.jobStartTime,
+      jobStartTime: job.jobStartTime ? new Date(job.jobStartTime) : new Date(),
     });
 
-  
+
     user.usedTransformations = (user.usedTransformations || 0) + 1;
     await user.save();
 
@@ -116,7 +116,6 @@ router.get("/voice-models", requireAuth, async (req: any, res: Response): Promis
       return;
     }
 
-
     const user = await User.findById(req.user._id);
     if (!user) {
       res.status(401).json({ error: "User not found" });
@@ -128,7 +127,6 @@ router.get("/voice-models", requireAuth, async (req: any, res: Response): Promis
       res.status(400).json({ error: "Invalid subscription plan" });
       return;
     }
-
 
     const response = await axios.get("https://arpeggi.io/api/kits/v1/voice-models", {
       headers: { Authorization: `Bearer ${kitsApiKey}` },
@@ -147,11 +145,9 @@ router.get("/voice-models", requireAuth, async (req: any, res: Response): Promis
       imageUrl: model.imageUrl || "https://via.placeholder.com/60",
     }));
 
-
     if (plan.voiceModelLimit !== 99999) {
       allModels = allModels.slice(0, plan.voiceModelLimit);
     }
-
 
     const page = parseInt(req.query.page as string, 10) || 1;
     const perPage = parseInt(req.query.perPage as string, 10) || 8;
@@ -207,7 +203,6 @@ router.get("/:id", requireAuth, async (req: any, res: Response): Promise<void> =
       return;
     }
 
-
     const response = await axios.get(
       `https://arpeggi.io/api/kits/v1/voice-conversions/${transformation.jobId}`,
       { headers: { Authorization: `Bearer ${kitsApiKey}` } }
@@ -218,6 +213,7 @@ router.get("/:id", requireAuth, async (req: any, res: Response): Promise<void> =
     if (updatedJob.status === "success" && updatedJob.outputFileUrl) {
       transformation.status = "success";
       transformation.outputFileUrl = updatedJob.outputFileUrl;
+      transformation.jobEndTime = new Date();
       await transformation.save();
     }
 

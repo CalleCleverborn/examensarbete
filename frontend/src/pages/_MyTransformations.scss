@@ -1,11 +1,10 @@
 .transformation-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 50px;
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
 }
 
 .transformation-item {
@@ -26,7 +25,7 @@
         .original-file {
             font-weight: 600;
             font-size: 1rem;
-            color: #eed202; // gold-ish text
+            color: #eed202;
         }
 
         .voice-model-id {
@@ -42,14 +41,14 @@
                 font-weight: bold;
 
                 &.success {
-                    color: #76c043; // success green
+                    color: #76c043;
                 }
                 &.running {
-                    color: #fbc02d; // processing yellow
+                    color: #fbc02d;
                 }
                 &.failed,
                 &.error {
-                    color: #e74c3c; // red
+                    color: #e74c3c;
                 }
             }
 

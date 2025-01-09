@@ -51,7 +51,7 @@ const MyTransformations: React.FC = () => {
           key={t._id}
           transformation={t}
           onDelete={deleteTransformation}
-          voiceModels={voiceModels} // pass for fallback lookup
+          voiceModels={voiceModels}
         />
       ))}
     </div>

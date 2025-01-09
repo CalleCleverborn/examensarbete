@@ -22,13 +22,18 @@ interface UseVoiceModelsResult {
   loadingModels: boolean;
 }
 
-export function useVoiceModels(): UseVoiceModelsResult {
+// [CHANGED] we add an optional param "shouldFetch"
+export function useVoiceModels(shouldFetch: boolean = true): UseVoiceModelsResult {
   const [voiceModels, setVoiceModels] = useState<VoiceModel[]>([]);
   const [pageMeta, setPageMeta] = useState<PageMeta | null>(null);
   const [page, setPage] = useState(1);
   const [loadingModels, setLoadingModels] = useState(false);
 
   useEffect(() => {
+    if (!shouldFetch) {
+      return; // skip fetch entirely
+    }
+
     const fetchVoiceModels = async () => {
       setLoadingModels(true);
       try {
@@ -73,7 +78,7 @@ export function useVoiceModels(): UseVoiceModelsResult {
     };
 
     fetchVoiceModels();
-  }, [page]);
+  }, [page, shouldFetch]);
 
   return {
     voiceModels,

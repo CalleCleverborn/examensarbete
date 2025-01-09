@@ -1,7 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useTransformations } from "../hooks/useTransformations";
 import { useVoiceModels } from "../hooks/useVoiceModels";
 import "./_MyTransformations.scss";
+
+import TransformationItem from "../components/TransformationItem";
 
 const MyTransformations: React.FC = () => {
   const {
@@ -12,13 +14,25 @@ const MyTransformations: React.FC = () => {
     deleteTransformation,
   } = useTransformations();
 
-  const { voiceModels, loadingModels } = useVoiceModels();
+  const [needVoiceModels, setNeedVoiceModels] = useState(false);
+
+  const { voiceModels, loadingModels } = useVoiceModels(needVoiceModels);
 
   useEffect(() => {
-    fetchAllTransformations();
+    const doFetch = async () => {
+      await fetchAllTransformations();
+
+      const missingName = transformations.some(
+        (t) => !t.voiceModelName || t.voiceModelName.trim() === ""
+      );
+      if (missingName) {
+        setNeedVoiceModels(true);
+      }
+    };
+    doFetch();
   }, []);
 
-  if (loadingList || loadingModels) {
+  if (loadingList || (needVoiceModels && loadingModels)) {
     return <p>Loading transformations...</p>;
   }
 
@@ -32,64 +46,14 @@ const MyTransformations: React.FC = () => {
 
   return (
     <div className="transformation-list">
-      {transformations.map((t) => {
-        const fileName =
-          t.originalFilename && t.originalFilename.trim() !== ""
-            ? t.originalFilename
-            : "Unknown file";
-
-        let modelName = "Unknown model";
-        if (t.voiceModelId) {
-          const found = voiceModels.find((vm) => vm.id === t.voiceModelId);
-          if (found && found.title.trim() !== "") {
-            modelName = found.title;
-          }
-        }
-
-        const dateStr = t.jobStartTime
-          ? new Date(t.jobStartTime).toLocaleDateString()
-          : "";
-
-        const statusClass = t.status.toLowerCase();
-
-        return (
-          <div key={t._id} className="transformation-item">
-            <div className="left-section">
-              <div className="original-file">{fileName}</div>
-              <div className="voice-model-id">Model: {modelName}</div>
-              <div className="date-and-status">
-                <span className={`status ${statusClass}`}>{t.status}</span>
-                {dateStr && (
-                  <span className="job-start-time"> | {dateStr}</span>
-                )}
-              </div>
-            </div>
-
-            <div className="right-section">
-              {t.status === "success" && t.outputFileUrl ? (
-                <audio className="audio-preview" controls src={t.outputFileUrl}>
-                  Your browser does not support the audio element.
-                </audio>
-              ) : (
-                <div className="fallback-info">
-                  {t.status === "running"
-                    ? "Processing..."
-                    : t.status === "failed"
-                      ? "Failed"
-                      : "No preview"}
-                </div>
-              )}
-
-              <button
-                className="delete-button"
-                onClick={() => deleteTransformation(t._id)}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        );
-      })}
+      {transformations.map((t) => (
+        <TransformationItem
+          key={t._id}
+          transformation={t}
+          onDelete={deleteTransformation}
+          voiceModels={voiceModels} // pass for fallback lookup
+        />
+      ))}
     </div>
   );
 };

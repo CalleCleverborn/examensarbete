@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 interface Transformation {
@@ -6,10 +5,9 @@ interface Transformation {
   jobId: number;
   status: string;
   outputFileUrl?: string;
-
-
   originalFilename?: string;
   voiceModelId?: number;
+  voiceModelName?: string;
   jobStartTime?: string;
   jobEndTime?: string;
 }
@@ -21,18 +19,19 @@ interface UseTransformations {
   transformations: Transformation[];
   loadingList: boolean;
   errorList: string | null;
-  fetchAllTransformations: () => Promise<void>;
+  fetchAllTransformations: () => Promise<Transformation[]>;
   deleteTransformation: (id: string) => Promise<void>;
 }
 
 export function useTransformations(): UseTransformations {
-
   const [latestTransformation, setLatestTransformation] =
     useState<Transformation | null>(null);
   const [loadingTransform, setLoadingTransform] = useState(false);
+
   const [transformations, setTransformations] = useState<Transformation[]>([]);
   const [loadingList, setLoadingList] = useState(false);
   const [errorList, setErrorList] = useState<string | null>(null);
+
 
   useEffect(() => {
     if (!latestTransformation) return;
@@ -45,7 +44,6 @@ export function useTransformations(): UseTransformations {
             { credentials: "include" }
           );
           if (!res.ok) return;
-
           const updated = await res.json();
           setLatestTransformation(updated);
 
@@ -60,7 +58,6 @@ export function useTransformations(): UseTransformations {
       return () => clearInterval(interval);
     }
   }, [latestTransformation]);
-
 
   async function handleTransform(selectedFile: File, voiceModelId: number) {
     setLoadingTransform(true);
@@ -88,7 +85,8 @@ export function useTransformations(): UseTransformations {
     }
   }
 
-  async function fetchAllTransformations(): Promise<void> {
+ 
+  async function fetchAllTransformations(): Promise<Transformation[]> {
     setLoadingList(true);
     setErrorList(null);
     try {
@@ -101,16 +99,17 @@ export function useTransformations(): UseTransformations {
         );
       }
       const json = await res.json();
-
-      setTransformations(json.data || []);
+      const data = json.data || [];
+      setTransformations(data);
+      return data; 
     } catch (err: any) {
       console.error("Error fetching transformations:", err);
       setErrorList(err.message || "Failed to fetch transformations.");
+      return [];
     } finally {
       setLoadingList(false);
     }
   }
-
 
   async function deleteTransformation(id: string): Promise<void> {
     const confirmed = window.confirm(
@@ -126,7 +125,6 @@ export function useTransformations(): UseTransformations {
       if (!res.ok) {
         throw new Error(`Delete failed with status: ${res.status}`);
       }
-    
       setTransformations((prev) => prev.filter((t) => t._id !== id));
     } catch (err) {
       console.error("Error deleting transformation:", err);
@@ -134,9 +132,7 @@ export function useTransformations(): UseTransformations {
     }
   }
 
-
   return {
-
     latestTransformation,
     loadingTransform,
     handleTransform,

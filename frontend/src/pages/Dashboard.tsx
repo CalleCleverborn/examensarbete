@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useVoiceModels } from "../hooks/useVoiceModels";
 import { useTransformations } from "../hooks/useTransformations";
 import ModelCard from "../components/ModelCard";
 import Pagination from "../components/Pagination";
 import OutputBox from "../components/OutputBox";
 import FileDropBox from "../components/FileDropBox";
-import type { VoiceModel } from "../hooks/useVoiceModels";
-
 import "./_Dashboard.scss";
 
 interface DashboardProps {
@@ -33,7 +32,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
   const { voiceModels, pageMeta, page, setPage, loadingModels } =
     useVoiceModels();
-
   const { latestTransformation, loadingTransform, handleTransform } =
     useTransformations();
 
@@ -77,7 +75,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       alert("Please select a file and a voice model first.");
       return;
     }
-
     await handleTransform(selectedFile, selectedVoiceModel);
   }
 
@@ -90,34 +87,26 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
   return (
     <div className="dashboard-page">
-      <div className="plan-info">
+      <div className="plan-info-wrapper">
         {loadingPlan ? (
           <div className="dashboard-message">Loading your plan info...</div>
         ) : plan ? (
           <>
-            {plan.conversionsPerMonth === 99999 ? (
-              <>
-                <p>
-                  You are on the <strong>{plan.name}</strong> plan with
-                  unlimited conversions.
-                </p>
-                <p>
-                  Conversions used:{" "}
-                  <strong>{user.usedTransformations || 0}</strong>
-                </p>
-              </>
-            ) : (
-              <>
-                <p>
-                  You are on the <strong>{plan.name}</strong> plan.
-                </p>
-                <p>
-                  Conversions used:{" "}
-                  <strong>{user.usedTransformations || 0}</strong> /{" "}
-                  <strong>{plan.conversionsPerMonth}</strong>
-                </p>
-              </>
-            )}
+            <p>
+              You are on the <strong>{plan.name}</strong> plan.
+            </p>
+            <p>
+              Conversions used: <strong>{user.usedTransformations || 0}</strong>{" "}
+              /{" "}
+              <strong>
+                {plan.conversionsPerMonth === 99999
+                  ? "Unlimited"
+                  : plan.conversionsPerMonth}
+              </strong>
+            </p>
+            <Link to="/app/my-plan" className="upgrade-link">
+              Upgrade Plan
+            </Link>
           </>
         ) : (
           <div className="dashboard-message">
@@ -131,24 +120,22 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
           selectedFile={selectedFile}
           onFileSelected={(file) => setSelectedFile(file)}
         />
-
         <div className="button-info-box">
           <div
             className="transform-button"
             onClick={!loadingTransform ? handleTransformClick : undefined}
             style={{ cursor: loadingTransform ? "not-allowed" : "pointer" }}
           >
-            {loadingTransform ? "Transforming..." : "3.Transform"}
+            {loadingTransform ? "Transforming..." : "3. Transform"}
           </div>
         </div>
-
         <div className="file-output-box">
           <OutputBox status={status} outputFileUrl={outputFileUrl} />
         </div>
       </div>
 
       <div className="model-list-wrapper">
-        <h3>2.Select Vocal Model</h3>
+        <h3>2. Select Vocal Model</h3>
         <div className="model-list">
           {loadingModels ? (
             Array.from({ length: 8 }, (_, i) => (
@@ -157,24 +144,18 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
           ) : voiceModels.length === 0 ? (
             <p className="dashboard-message">No voice models found.</p>
           ) : (
-            voiceModels.map((model: VoiceModel) => {
-              const isSelected = model.id === selectedVoiceModel;
-              const isImgLoaded = imageLoaded[model.id] === true;
-
-              return (
-                <ModelCard
-                  key={model.id}
-                  model={model}
-                  isSelected={isSelected}
-                  onSelect={() => setSelectedVoiceModel(model.id)}
-                  imageLoaded={isImgLoaded}
-                  onImageLoad={() => handleImageLoad(model.id)}
-                />
-              );
-            })
+            voiceModels.map((model) => (
+              <ModelCard
+                key={model.id}
+                model={model}
+                isSelected={model.id === selectedVoiceModel}
+                onSelect={() => setSelectedVoiceModel(model.id)}
+                imageLoaded={imageLoaded[model.id] || false}
+                onImageLoad={() => handleImageLoad(model.id)}
+              />
+            ))
           )}
         </div>
-
         {pageMeta && (
           <Pagination pageMeta={pageMeta} page={page} onPageChange={setPage} />
         )}

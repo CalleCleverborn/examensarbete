@@ -43,7 +43,3 @@ npm run dev
 # I frontend-mappen
 
 npm run dev
-
-```
-
-```

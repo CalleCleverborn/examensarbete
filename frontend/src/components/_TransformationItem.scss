@@ -1,0 +1,102 @@
+@use "../styles/variables" as v;
+@use "../styles/mixins";
+.transformation-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    background-color: #1f1f1f;
+    border: 1px solid #2c2c2c;
+    border-radius: 10px;
+    padding: 18px 24px;
+    margin-bottom: 16px;
+
+    transition:
+        box-shadow 0.3s ease,
+        transform 0.3s ease;
+    &:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .left-section {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        .original-file {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #eed202;
+        }
+
+        .voice-model-id {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .date-and-status {
+            font-size: 0.8rem;
+            color: #999;
+
+            .status {
+                font-weight: bold;
+
+                &.success {
+                    color: #76c043;
+                }
+                &.running {
+                    color: #fbc02d;
+                }
+                &.failed,
+                &.error {
+                    color: #e74c3c;
+                }
+            }
+
+            .job-start-time {
+                margin-left: 8px;
+            }
+        }
+    }
+
+    .right-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .custom-audio-player {
+            max-width: 300px;
+        }
+
+        .delete-button {
+            background-color: transparent;
+            color: #f44;
+            border: 1px solid #f44;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+                background-color: rgba(255, 68, 68, 0.2);
+            }
+        }
+    }
+
+    @include mixins.mobile {
+        flex-direction: column;
+        align-items: flex-start;
+
+        .left-section {
+            width: 100%;
+        }
+        .right-section {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+}

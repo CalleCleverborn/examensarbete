@@ -40,20 +40,24 @@ const MyTransformations: React.FC = () => {
     return <p style={{ color: "red" }}>{errorList}</p>;
   }
 
-  if (transformations.length === 0) {
-    return <p>No transformations found.</p>;
-  }
-
   return (
-    <div className="transformation-list">
-      {transformations.map((t) => (
-        <TransformationItem
-          key={t._id}
-          transformation={t}
-          onDelete={deleteTransformation}
-          voiceModels={voiceModels}
-        />
-      ))}
+    <div className="my-transformations-page">
+      <h1>Your Transformations</h1>
+
+      {transformations.length === 0 ? (
+        <p>No transformations found.</p>
+      ) : (
+        <div className="transformation-list">
+          {transformations.map((t) => (
+            <TransformationItem
+              key={t._id}
+              transformation={t}
+              onDelete={deleteTransformation}
+              voiceModels={voiceModels}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,5 +1,7 @@
 import React from "react";
 import { VoiceModel } from "../hooks/useVoiceModels";
+import CustomAudioPlayer from "./CustomAudioPlayer";
+import "./_TransformationItem.scss";
 
 interface Transformation {
   _id: string;
@@ -65,13 +67,7 @@ const TransformationItem: React.FC<TransformationItemProps> = ({
 
       <div className="right-section">
         {transformation.status === "success" && transformation.outputFileUrl ? (
-          <audio
-            className="audio-preview"
-            controls
-            src={transformation.outputFileUrl}
-          >
-            Your browser does not support the audio element.
-          </audio>
+          <CustomAudioPlayer src={transformation.outputFileUrl} />
         ) : (
           <div className="fallback-info">
             {transformation.status === "running"

@@ -37,17 +37,16 @@ app.use(
 );
 
 
-app.use(
-  session({
-    secret: "supersecretkey",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: true,     
-      sameSite: "none", 
-    },
-  })
-);
+app.use(session({
+  secret: "supersecretkey",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: true,
+    sameSite: "none",
+  },
+}));
+
 
 app.use(express.json());
 

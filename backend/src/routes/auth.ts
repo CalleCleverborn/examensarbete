@@ -9,9 +9,13 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get("/google/callback", 
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
+  
+    console.log("User from callback:", req.user);
+    
     res.redirect("https://vocalflow.netlify.app/app/dashboard");
   }
 );
+
 
 
 

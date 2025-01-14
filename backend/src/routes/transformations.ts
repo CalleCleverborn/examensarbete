@@ -4,9 +4,9 @@ import FormData from "form-data";
 import mongoose from "mongoose";
 import requireAuth from "../middleware/auth";
 import upload from "../middleware/upload";
-import Transformation from "../../models/Transformation";
-import Plan from "../../models/Plan";
-import User from "../../models/User";
+import Transformation from "../models/Transformation";
+import Plan from "../models/Plan";
+import User from "../models/User";
 
 const router = Router();
 

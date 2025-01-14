@@ -2,8 +2,8 @@
 import { Router, Request, Response } from "express";
 import Stripe from "stripe";
 import requireAuth from "../middleware/auth";
-import Plan from "../../models/Plan";
-import User from "../../models/User";
+import Plan from "../models/Plan";
+import User from "../models/User";
 
 const router = Router();
 

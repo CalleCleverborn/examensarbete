@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Plan from "../../models/Plan";
+import Plan from "../models/Plan";
 
 export async function seedPlans() {
     const count = await Plan.countDocuments();

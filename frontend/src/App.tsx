@@ -23,7 +23,9 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:4000/auth/me", { credentials: "include" })
+    fetch("https://backend-qrwq.onrender.com/auth/me", {
+      credentials: "include",
+    })
       .then((res) => {
         if (res.status === 200) return res.json();
         throw new Error("Not logged in");

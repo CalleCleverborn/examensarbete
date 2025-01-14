@@ -14,7 +14,7 @@ passport.use(
     {
       clientID: googleClientId,
       clientSecret: googleClientSecret,
-      // Uppdaterad rad:
+   
       callbackURL: "https://backend-qrwq.onrender.com/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {

@@ -7,20 +7,57 @@
     justify-content: center;
     gap: 50px;
     padding-bottom: 50px;
-}
+    align-items: center;
 
-.title-desc-box {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+    max-width: 1000px;
+    margin: 0 auto;
 
-h1 {
-    margin: 0;
-}
+    h1 {
+        margin: 0;
+        font-size: 2rem;
+        color: #fff;
+        text-align: center;
+    }
 
-h3 {
-    margin: 0;
+    .plan-intro {
+        text-align: center;
+        font-size: 1rem;
+        color: #ccc;
+        max-width: 600px;
+        margin: 0 auto;
+
+        p {
+            margin: 10px 0;
+        }
+
+        .current-plan-info {
+            color: #eed202;
+            font-weight: 600;
+        }
+    }
+
+    .help-section {
+        text-align: center;
+        font-size: 0.95rem;
+        color: #aaa;
+        max-width: 600px;
+
+        h4 {
+            margin: 0;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        a {
+            color: #eed202;
+            text-decoration: underline;
+
+            &:hover {
+                color: #ffd800;
+            }
+        }
+    }
 }
 
 .plans-wrapper {
@@ -29,6 +66,7 @@ h3 {
     justify-content: center;
     align-items: center;
     gap: 75px;
+
     @include mixins.desktop {
         flex-direction: row;
     }
@@ -43,9 +81,40 @@ h3 {
     background-color: #232323;
     padding: 20px;
     border-radius: 20px;
+    transition: transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+    &:hover {
+        transform: translateY(-3px);
+    }
 
     &.selected {
         outline: 2px solid #eed202;
+    }
+
+    .title-desc-box {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        h3 {
+            margin: 0;
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
+        p {
+            margin: 0;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+    }
+
+    h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #eed202;
+        text-align: center;
     }
 
     ul {
@@ -55,17 +124,38 @@ h3 {
         list-style: none;
         margin: 0;
         padding: 0;
-    }
-}
+        color: #eee;
+        font-size: 0.9rem;
 
-.select-plan-button {
-    text-align: center;
-    font-size: 16px;
-    background-color: #2d2d2d;
-    border-radius: 20px;
-    padding: 10px;
-    cursor: pointer;
-    &:hover {
-        background-color: #303030;
+        li {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+
+            span:first-child {
+                color: #76c043;
+                font-weight: 600;
+            }
+        }
+    }
+
+    .select-plan-button {
+        text-align: center;
+        font-size: 16px;
+        background-color: #2d2d2d;
+        border-radius: 20px;
+        padding: 10px;
+        cursor: pointer;
+        color: #fff;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+            background-color: #303030;
+        }
+
+        &.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
     }
 }

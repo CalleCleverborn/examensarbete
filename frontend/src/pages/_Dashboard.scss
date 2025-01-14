@@ -17,10 +17,11 @@
 
 .plan-info-wrapper {
     text-align: center;
-    margin-bottom: 50px;
     display: flex;
     flex-direction: column;
     gap: 5px;
+    min-height: 120px;
+
     p {
         font-size: 16px;
         color: white;
@@ -38,6 +39,22 @@
             color: #d6b902;
         }
     }
+
+    .loading-plan {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+
+        .spinner {
+            width: 25px;
+            height: 25px;
+            border: 3px solid #ededed;
+            border-top: 3px solid #eed202;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+    }
 }
 
 .transformation-wrapper {
@@ -48,7 +65,6 @@
     gap: 24px;
     height: auto;
     width: 100%;
-
     padding-bottom: 50px;
 
     @include mixins.desktop {
@@ -130,4 +146,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }

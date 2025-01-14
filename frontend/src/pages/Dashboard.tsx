@@ -89,7 +89,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
     <div className="dashboard-page">
       <div className="plan-info-wrapper">
         {loadingPlan ? (
-          <div className="dashboard-message">Loading your plan info...</div>
+          <div className="loading-plan">
+            <div className="spinner" />
+            <div className="dashboard-message">Loading your plan info...</div>
+          </div>
         ) : plan ? (
           <>
             <p>

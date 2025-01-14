@@ -3,6 +3,7 @@ import "./_MyPlan.scss";
 
 interface User {
   subscriptionPlan?: string;
+  name?: string;
 }
 
 interface Plan {
@@ -68,9 +69,25 @@ const MyPlan: React.FC<MyPlanProps> = ({ user }) => {
     return <div>Loading...</div>;
   }
 
+  const userName = user?.name ?? "User";
+
   return (
     <div className="plan-page">
       <h1>Payment and Pricing</h1>
+
+      <div className="plan-intro">
+        <p>
+          Hi {userName}, here you can see all our available subscription plans.
+          Choose the plan that best fits your needs, or change your current plan
+          if you want to upgrade or downgrade.
+        </p>
+        {user?.subscriptionPlan && (
+          <p className="current-plan-info">
+            You are currently on the <strong>{user.subscriptionPlan}</strong>{" "}
+            plan.
+          </p>
+        )}
+      </div>
 
       <div className="plans-wrapper">
         {plans.map((plan) => {
@@ -85,7 +102,6 @@ const MyPlan: React.FC<MyPlanProps> = ({ user }) => {
             >
               <div className="title-desc-box">
                 <h3>{plan.name}</h3>
-
                 <p>{plan.description}</p>
               </div>
 
@@ -111,6 +127,18 @@ const MyPlan: React.FC<MyPlanProps> = ({ user }) => {
             </div>
           );
         })}
+      </div>
+
+      <div className="help-section">
+        <h4>Need Help?</h4>
+        <p>
+          If you have any questions regarding billing or how to choose your
+          plan, please check our{" "}
+          <a href="/faq" target="_blank" rel="noreferrer">
+            FAQ
+          </a>{" "}
+          or contact our support team.
+        </p>
       </div>
     </div>
   );

@@ -29,16 +29,15 @@ mongoose
 
 const app = express();
 
-app.use(
-  cors({
-    origin: [
-      'http://localhost:5173',
-      'https://vocalflow.netlify.app',
-    ],
-    credentials: true,
-  })
-);
-
+app.use(session({
+  secret: 'supersecretkey',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, 
+    sameSite: 'none' 
+  }
+}))
 app.use(express.json());
 
 app.use(

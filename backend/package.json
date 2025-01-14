@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.16"
   }

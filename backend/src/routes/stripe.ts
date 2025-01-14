@@ -1,4 +1,3 @@
-
 import { Router, Request, Response } from "express";
 import Stripe from "stripe";
 import requireAuth from "../middleware/auth";
@@ -7,11 +6,9 @@ import User from "../models/User";
 
 const router = Router();
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {});
 
-});
-
-router.post("/checkout", requireAuth, async (req: any, res: Response): Promise<void> => {
+router.post("/checkout", requireAuth, async (req: any, res: Response) => {
   try {
     const { planName } = req.body;
     if (!planName) {
@@ -24,7 +21,6 @@ router.post("/checkout", requireAuth, async (req: any, res: Response): Promise<v
       res.status(404).json({ error: "Plan not found" });
       return;
     }
-
 
     const product = await stripe.products.create({
       name: plan.name,
@@ -43,8 +39,8 @@ router.post("/checkout", requireAuth, async (req: any, res: Response): Promise<v
       payment_method_types: ["card"],
       line_items: [{ price: price.id, quantity: 1 }],
       mode: "subscription",
-      success_url: "http://localhost:4000/api/stripe/success?planName=" + plan.name,
-      cancel_url: "http://localhost:5173/app/my-plan",
+      success_url: "https://backend-qrwq.onrender.com/api/stripe/success?planName=" + plan.name,
+      cancel_url: "https://vocalflow.netlify.app/app/my-plan",
       client_reference_id: req.user._id.toString(),
     });
 
@@ -55,8 +51,7 @@ router.post("/checkout", requireAuth, async (req: any, res: Response): Promise<v
   }
 });
 
-
-router.get("/success", async (req: any, res: Response): Promise<void> => {
+router.get("/success", async (req: any, res: Response) => {
   try {
     const { planName } = req.query;
     if (!planName) {
@@ -83,7 +78,6 @@ router.get("/success", async (req: any, res: Response): Promise<void> => {
       subscriptionPlan: plan.name,
       usedTransformations: 0,
     });
-
 
     res.redirect("http://localhost:5173/app/my-plan");
   } catch (error: any) {

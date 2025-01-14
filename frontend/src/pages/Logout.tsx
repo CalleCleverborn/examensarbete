@@ -9,15 +9,15 @@ const Logout: React.FC<LogoutProps> = ({ setUser }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:4000/auth/logout", { credentials: "include" })
+    fetch("https://backend-qrwq.onrender.com/auth/logout", {
+      credentials: "include",
+    })
       .then(() => {
         setUser(null);
-
         navigate("/");
       })
       .catch((err) => {
         console.error("Logout error:", err);
-
         setUser(null);
         navigate("/");
       });

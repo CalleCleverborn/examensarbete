@@ -46,7 +46,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       if (!user?.subscriptionPlan) return;
       try {
         setLoadingPlan(true);
-        const res = await fetch("http://localhost:4000/api/plans", {
+
+        const res = await fetch("https://backend-qrwq.onrender.com/api/plans", {
           credentials: "include",
         });
         if (!res.ok) {

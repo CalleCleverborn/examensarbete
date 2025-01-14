@@ -32,15 +32,15 @@ export function useTransformations(): UseTransformations {
   const [loadingList, setLoadingList] = useState(false);
   const [errorList, setErrorList] = useState<string | null>(null);
 
-
   useEffect(() => {
     if (!latestTransformation) return;
 
     if (latestTransformation.status !== "success") {
       const interval = setInterval(async () => {
         try {
+      
           const res = await fetch(
-            `http://localhost:4000/api/transformations/${latestTransformation._id}`,
+            `https://backend-qrwq.onrender.com/api/transformations/${latestTransformation._id}`,
             { credentials: "include" }
           );
           if (!res.ok) return;
@@ -66,7 +66,8 @@ export function useTransformations(): UseTransformations {
       formData.append("soundFile", selectedFile);
       formData.append("voiceModelId", String(voiceModelId));
 
-      const res = await fetch("http://localhost:4000/api/transformations", {
+ 
+      const res = await fetch("https://backend-qrwq.onrender.com/api/transformations", {
         method: "POST",
         body: formData,
         credentials: "include",
@@ -85,12 +86,12 @@ export function useTransformations(): UseTransformations {
     }
   }
 
- 
   async function fetchAllTransformations(): Promise<Transformation[]> {
     setLoadingList(true);
     setErrorList(null);
     try {
-      const res = await fetch("http://localhost:4000/api/transformations", {
+
+      const res = await fetch("https://backend-qrwq.onrender.com/api/transformations", {
         credentials: "include",
       });
       if (!res.ok) {
@@ -101,7 +102,7 @@ export function useTransformations(): UseTransformations {
       const json = await res.json();
       const data = json.data || [];
       setTransformations(data);
-      return data; 
+      return data;
     } catch (err: any) {
       console.error("Error fetching transformations:", err);
       setErrorList(err.message || "Failed to fetch transformations.");
@@ -118,7 +119,8 @@ export function useTransformations(): UseTransformations {
     if (!confirmed) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/transformations/${id}`, {
+  
+      const res = await fetch(`https://backend-qrwq.onrender.com/api/transformations/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

@@ -1,4 +1,3 @@
-
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from '../models/User';
@@ -15,7 +14,8 @@ passport.use(
     {
       clientID: googleClientId,
       clientSecret: googleClientSecret,
-      callbackURL: "http://localhost:4000/auth/google/callback",
+      // Uppdaterad rad:
+      callbackURL: "https://backend-qrwq.onrender.com/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       console.log("GoogleStrategy callback invoked");
@@ -23,7 +23,6 @@ passport.use(
       try {
         let user = await User.findOne({ googleId: profile.id });
         if (!user) {
-          
           user = await User.create({
             googleId: profile.id,
             email: profile.emails && profile.emails[0] ? profile.emails[0].value : '',

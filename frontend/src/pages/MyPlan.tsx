@@ -29,9 +29,13 @@ const MyPlan: React.FC<MyPlanProps> = ({ user }) => {
     const fetchPlans = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:4000/api/plans", {
-          credentials: "include",
-        });
+
+        const response = await fetch(
+          "https://backend-qrwq.onrender.com/api/plans",
+          {
+            credentials: "include",
+          }
+        );
         if (!response.ok) {
           throw new Error(`Failed to fetch plans. Status: ${response.status}`);
         }
@@ -48,12 +52,15 @@ const MyPlan: React.FC<MyPlanProps> = ({ user }) => {
 
   async function handleChangePlan(planName: string) {
     try {
-      const res = await fetch("http://localhost:4000/api/stripe/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ planName }),
-      });
+      const res = await fetch(
+        "https://backend-qrwq.onrender.com/api/stripe/checkout",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ planName }),
+        }
+      );
       if (!res.ok) {
         throw new Error(`Failed to initiate checkout: ${res.status}`);
       }

@@ -79,7 +79,7 @@ router.get("/success", async (req: any, res: Response) => {
       usedTransformations: 0,
     });
 
-    res.redirect("https://backend-qrwq.onrender.com/app/my-plan");
+    res.redirect("https://vocalflow.netlify.app/app/my-plan");
   } catch (error: any) {
     console.error("Error updating subscription plan:", error);
     res.status(500).send("Internal server error");

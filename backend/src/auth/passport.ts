@@ -15,7 +15,7 @@ passport.use(
     {
       clientID: googleClientId,
       clientSecret: googleClientSecret,
-      callbackURL: "http://localhost:4000/auth/google/callback",
+      callbackURL: "https://examensarbete.onrender.com/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       console.log("GoogleStrategy callback invoked");

@@ -9,7 +9,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get("/google/callback", 
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    res.redirect("https://examensarbete-tawny.vercel.app/app/dashboard");
+    res.redirect("https://examensarbete-d47ew7n3g-carl-cleverborns-projects.vercel.app/app/dashboard");
   }
 );
 

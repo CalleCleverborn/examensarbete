@@ -16,7 +16,7 @@ const port = process.env.PORT || 4000;
 const mongodbUri = process.env.MONGODB_URI;
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://examensarbete-frontend.vercel.app", 
+  "https://examensarbete-tawny.vercel.app", 
 ];
 
 if (!mongodbUri) {

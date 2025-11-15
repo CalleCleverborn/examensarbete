@@ -40,7 +40,7 @@ export function useTransformations(): UseTransformations {
       const interval = setInterval(async () => {
         try {
           const res = await fetch(
-            `http://localhost:4000/api/transformations/${latestTransformation._id}`,
+            `https://examensarbete.onrender.com/api/transformations/${latestTransformation._id}`,
             { credentials: "include" }
           );
           if (!res.ok) return;
@@ -66,7 +66,7 @@ export function useTransformations(): UseTransformations {
       formData.append("soundFile", selectedFile);
       formData.append("voiceModelId", String(voiceModelId));
 
-      const res = await fetch("http://localhost:4000/api/transformations", {
+      const res = await fetch("https://examensarbete.onrender.com/api/transformations", {
         method: "POST",
         body: formData,
         credentials: "include",
@@ -90,7 +90,7 @@ export function useTransformations(): UseTransformations {
     setLoadingList(true);
     setErrorList(null);
     try {
-      const res = await fetch("http://localhost:4000/api/transformations", {
+      const res = await fetch("https://examensarbete.onrender.com/api/transformations", {
         credentials: "include",
       });
       if (!res.ok) {
@@ -118,7 +118,7 @@ export function useTransformations(): UseTransformations {
     if (!confirmed) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/transformations/${id}`, {
+      const res = await fetch(`https://examensarbete.onrender.com/api/transformations/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

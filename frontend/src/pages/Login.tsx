@@ -8,7 +8,7 @@ const Login: React.FC = () => {
         <h1>Welcome to VocalFlow</h1>
         <p>Your AI vocal transformation tool</p>
         <a
-          href="http://localhost:4000/auth/google"
+          href="https://examensarbete.onrender.com/auth/google"
           className="google-login-btn"
         >
           <img

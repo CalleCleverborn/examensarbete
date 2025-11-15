@@ -9,7 +9,7 @@ const Logout: React.FC<LogoutProps> = ({ setUser }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:4000/auth/logout", { credentials: "include" })
+    fetch("https://examensarbete.onrender.com/auth/logout", { credentials: "include" })
       .then(() => {
         setUser(null);
 

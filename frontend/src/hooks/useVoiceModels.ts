@@ -43,7 +43,7 @@ export function useVoiceModels(shouldFetch: boolean = true): UseVoiceModelsResul
         });
 
         const res = await fetch(
-          `http://localhost:4000/api/transformations/voice-models?${query}`,
+          `https://examensarbete.onrender.com/api/transformations/voice-models?${query}`,
           { credentials: "include" }
         );
         if (!res.ok) {

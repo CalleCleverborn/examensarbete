@@ -29,7 +29,7 @@ const MyPlan: React.FC<MyPlanProps> = ({ user }) => {
     const fetchPlans = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:4000/api/plans", {
+        const response = await fetch("https://examensarbete.onrender.com/api/plans", {
           credentials: "include",
         });
         if (!response.ok) {
@@ -48,7 +48,7 @@ const MyPlan: React.FC<MyPlanProps> = ({ user }) => {
 
   async function handleChangePlan(planName: string) {
     try {
-      const res = await fetch("http://localhost:4000/api/stripe/checkout", {
+      const res = await fetch("https://examensarbete.onrender.com/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

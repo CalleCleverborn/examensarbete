@@ -14,6 +14,10 @@ import { seedPlans } from "./scripts/seedPlans";
 
 const port = process.env.PORT || 4000;
 const mongodbUri = process.env.MONGODB_URI;
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://examensarbete-frontend.vercel.app", 
+];
 
 if (!mongodbUri) {
   throw new Error("No MongoDB URI found in environment variables");
@@ -29,29 +33,29 @@ mongoose
 
 const app = express();
 
-// Viktigt på Render (app kör bakom proxy / load balancer)
+
 app.set("trust proxy", 1);
 
-// CORS – tillåt din frontend på localhost:5173
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: allowedOrigins,
     credentials: true,
   })
 );
 
 app.use(express.json());
 
-// SESSION – hårdkodat för cross-site mellan localhost:5173 och https://examensarbete.onrender.com
+
 app.use(
   session({
     secret: "supersecretkey",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      // måste vara true för att SameSite=None ska accepteras i moderna browsers
+     
       secure: true,
-      // krävs för att cookie ska skickas från localhost:5173 -> examensarbete.onrender.com i XHR
+   
       sameSite: "none",
     },
   })

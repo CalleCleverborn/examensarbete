@@ -9,7 +9,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get("/google/callback", 
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    res.redirect("http://localhost:5173/app/dashboard");
+    res.redirect("https://examensarbete-tawny.vercel.app/app/dashboard");
   }
 );
 
